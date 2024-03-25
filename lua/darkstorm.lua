@@ -402,4 +402,8 @@ Darkstorm.load = function()
   end
 end
 
+Darkstorm.setup = function(options)
+  -- Nothing to setup
+end
+
 return Darkstorm
