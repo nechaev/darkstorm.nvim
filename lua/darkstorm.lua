@@ -403,7 +403,17 @@ Darkstorm.load = function()
 end
 
 Darkstorm.setup = function(options)
-  -- Nothing to setup
+  local php_query = [[
+  [
+    (php_tag)
+    "?>"
+  ] @tag
+
+
+  ((comment)+ @comment.documentation
+    (#match? @comment.documentation "^/\\*\\*"))
+  ]]
+  require('vim.treesitter.query').set("php", "highlights", php_query)
 end
 
 return Darkstorm
