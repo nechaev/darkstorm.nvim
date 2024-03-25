@@ -384,8 +384,223 @@ local function get_groups()
   return groups
 end
 
+local function get_php_query()
+  return [[
+[
+  (php_tag)
+  "?>"
+] @tag
+
+; Keywords
+
+[
+  "and"
+  "as"
+  "break"
+  "case"
+  "catch"
+  "class"
+  "clone"
+  "const"
+  "continue"
+  "declare"
+  "default"
+  "do"
+  "echo"
+  "else"
+  "elseif"
+  "enddeclare"
+  "endfor"
+  "endforeach"
+  "endif"
+  "endswitch"
+  "endwhile"
+  "enum"
+  "exit"
+  "extends"
+  "finally"
+  "fn"
+  "for"
+  "foreach"
+  "function"
+  "global"
+  "goto"
+  "if"
+  "implements"
+  "include"
+  "include_once"
+  "instanceof"
+  "insteadof"
+  "interface"
+  "match"
+  "namespace"
+  "new"
+  "or"
+  "print"
+  "require"
+  "require_once"
+  "return"
+  "switch"
+  "throw"
+  "trait"
+  "try"
+  "use"
+  "while"
+  "xor"
+  "yield"
+  (abstract_modifier)
+  (final_modifier)
+  (readonly_modifier)
+  (static_modifier)
+  (visibility_modifier)
+] @keyword
+
+(yield_expression "from" @keyword)
+(function_static_declaration "static" @keyword)
+
+; Variables
+
+(relative_scope) @variable.builtin
+
+(variable_name) @variable
+
+(method_declaration name: (name) @constructor
+  (#eq? @constructor "__construct"))
+
+(object_creation_expression [
+  (name) @constructor
+  (qualified_name (name) @constructor)
+])
+
+((name) @constant
+ (#match? @constant "^_?[A-Z][A-Z\\d_]+$"))
+((name) @constant.builtin
+ (#match? @constant.builtin "^__[A-Z][A-Z\d_]+__$"))
+(const_declaration (const_element (name) @constant))
+
+; Types
+
+(primitive_type) @type.builtin
+(cast_type) @type.builtin
+(named_type [
+  (name) @type
+  (qualified_name (name) @type)
+]) @type
+(named_type (name) @type.builtin
+  (#any-of? @type.builtin "static" "self"))
+
+; Functions
+
+(array_creation_expression "array" @function.builtin)
+(list_literal "list" @function.builtin)
+(exit_statement "exit" @function.builtin "(")
+
+(method_declaration
+  name: (name) @function.method)
+
+(function_call_expression
+  function: [(qualified_name (name)) (name)] @function)
+
+(scoped_call_expression
+  name: (name) @function)
+
+(member_call_expression
+  name: (name) @function.method)
+
+(function_definition
+  name: (name) @function)
+
+; Member
+
+(property_element
+  (variable_name) @property)
+
+(member_access_expression
+  name: (variable_name (name)) @property)
+(member_access_expression
+  name: (name) @property)
+
+; Basic tokens
+[
+  (string)
+  (string_value)
+  (encapsed_string)
+  (heredoc)
+  (heredoc_body)
+  (nowdoc_body)
+] @string
+(boolean) @constant.builtin
+(null) @constant.builtin
+(integer) @number
+(float) @number
+(comment) @comment
+
+((name) @variable.builtin
+ (#eq? @variable.builtin "this"))
+
+
+((comment)+ @comment.documentation
+  (#match? @comment.documentation "^/\\*\\*"))
+
+  ]]
+end
+
+local function get_css_query()
+  return [[
+(comment) @comment
+
+(tag_name) @tag
+"@media" @keyword
+"@import" @keyword
+"@charset" @keyword
+"@namespace" @keyword
+"@supports" @keyword
+"@keyframes" @keyword
+(at_keyword) @keyword
+(to) @keyword
+(from) @keyword
+(important) @keyword
+
+(property_name) @property.name
+(id_name) @property.id
+(class_name) @class.name
+(class_selector) @class.selector
+(id_selector) @id.selector
+
+(string_value) @string
+(integer_value) @number
+(float_value) @number
+(plain_value) @property.value
+(unit) @property.value.unit
+
+(function_name) @function
+
+"," @punctuation.delimiter
+":" @punctuation.delimiter
+
+"~" @operator
+">" @operator
+"+" @operator
+"-" @operator
+"*" @operator
+"/" @operator
+"=" @operator
+"^=" @operator
+"|=" @operator
+"~=" @operator
+"$=" @operator
+"*=" @operator
+
+"and" @operator
+"or" @operator
+"not" @operator
+"only" @operator
+  ]]
+end
+
 --- main load function
 Darkstorm.load = function()
+  Darkstorm.setup()
   -- reset colors
   if vim.g.colors_name then
     vim.cmd.hi("clear")
@@ -402,18 +617,9 @@ Darkstorm.load = function()
   end
 end
 
-Darkstorm.setup = function(options)
-  local php_query = [[
-  [
-    (php_tag)
-    "?>"
-  ] @tag
-
-
-  ((comment)+ @comment.documentation
-    (#match? @comment.documentation "^/\\*\\*"))
-  ]]
-  require('vim.treesitter.query').set("php", "highlights", php_query)
+Darkstorm.setup = function()
+  require('vim.treesitter.query').set("php", "highlights", get_php_query())
+  require('vim.treesitter.query').set("css", "highlights", get_css_query())
 end
 
 return Darkstorm
