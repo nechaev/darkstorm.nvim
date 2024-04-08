@@ -2,6 +2,10 @@
 
 A dark Neovim theme written in Lua. Reproduction of the official JetBrains IDE Darcula theme.
 
+<div align="center">
+    <img src="https://raw.githubusercontent.com/nechaev/darkstorm.nvim/master/screenshot.png?raw=true"/>
+</div>
+
 ## ⚡️ Supported languages
 
 - PHP
