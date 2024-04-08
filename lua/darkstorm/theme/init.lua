@@ -16,6 +16,7 @@ local Plugins = {
 	"gitsigns",
 	"neo-tree",
 	"noice",
+	"which-key",
 }
 
 local Langs = {
