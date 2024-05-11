@@ -161,7 +161,6 @@ M.get_ts_query = function()
 ; Basic tokens
 [
   (string)
-  (string_value)
   (encapsed_string)
   (heredoc)
   (heredoc_body)
