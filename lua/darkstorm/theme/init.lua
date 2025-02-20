@@ -75,7 +75,7 @@ M.prepare = function()
 			return ...
 		end, "darkstorm.theme.langs." .. langname)
 		if ret then
-			ts.set(langname, "highlights", lang.get_ts_query())
+			-- ts.set(langname, "highlights", lang.get_ts_query())
 		end
 	end
 end
